@@ -131,6 +131,9 @@ class Skill:
         self.activationRate_jp = skillList["activationRate_jp"]
         self.isActivateList = []
 
+    def __str__(self):
+        return "Skill(type=" + str(self.type) + ", frequency=" + str(self.frequency) + ", effectTime=" + str(self.effectTime) + ", effect="+str(self.effect)+")"
+
     def isCombo(self):
         return self.type == "combo"
 
@@ -169,10 +172,11 @@ class Skill:
         if self.idol.getType() == self.music.getType():
             additional = additional + 0.3
         additional = additional + centerSkill.getAdditionalActivationRate()
-        return Skill.activationRateJpList[activationRate_jp] * (1 + 0.054* (self.idol.getSkillLevel() -1 )) * additional
+        return Skill.activationRateJpList[activationRate_jp] * (1 + 0.0555* (self.idol.getSkillLevel() -1 )) * additional
 
     def _calcEffectTime(self, effectTime_jp):
-        return Skill.effectTimeJpList[effectTime_jp] * (1 + 0.054* (self.idol.getSkillLevel() -1 ))
+        lv1 = Skill.effectTimeJpList[effectTime_jp]
+        return lv1 + math.floor(lv1 * 5.55) / float(100) * float(self.idol.getSkillLevel() -1 )
 
     def calcIsActivate(self):
         length = self.music.getLength()
@@ -195,11 +199,14 @@ class Skill:
     def getActivateCount(self):
         return len(filter(lambda x: x,  self.isActivateList))
             
-    def calcNthSkill(self, noteTime, tolerance):
-        noteTime = noteTime + tolerance - self.frequency
+    def calcNthSkill(self, noteTimeOriginal, tolerance):
+        noteTime = noteTimeOriginal + tolerance - self.frequency
         if noteTime < 0:
             return None
-        if (noteTime % self.frequency) >= self.effectTime:
+        end = self.music.getLength() -3
+        if (noteTimeOriginal > end):
+            return None
+        if (noteTime % self.frequency) > self.effectTime:
             return None
         return int(math.floor(noteTime / self.frequency))
     
