@@ -22,7 +22,7 @@ class Music:
         self.type = musicJson["type"]
         self.comboRate = []
         self.calcComboRate()
-        matrix = myfile.readCsv(config["baseDir"]+"/musics/"+name+"-"+difficalty + "-notes.json")
+        matrix = myfile.readCsv(config["baseDir"]+"/musics/"+name+"-"+difficalty + "-notes.csv")
         matrix[0].pop(0)
         self.notes = [float(str) for str in matrix[0]]
 

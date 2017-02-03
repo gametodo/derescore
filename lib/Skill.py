@@ -130,6 +130,7 @@ class Skill:
             self.effect = 1.0
         self.activationRate_jp = skillList["activationRate_jp"]
         self.isActivateList = []
+        self.activationRate = 0.0
 
     def __str__(self):
         return "Skill(type=" + str(self.type) + ", frequency=" + str(self.frequency) + ", effectTime=" + str(self.effectTime) + ", effect="+str(self.effect)+")"
@@ -161,7 +162,10 @@ class Skill:
                 skillList = self._groupToList(group, fetchers)
                 skillList["type"] = key
                 return skillList
-        raise Exception('Skill::parse fail : ' + skillstr)
+        # FIXME: exception message cannot use utf8
+        print skillstr
+        raise Exception("Skill::parse")
+#        raise Exception(u"Skill::parse fail : " + str(skillstr))
         
     def calcActivationRate(self, centerSkill, calcType):
         if calcType == Skill.FULL:
@@ -172,13 +176,18 @@ class Skill:
         if self.idol.getType() == self.music.getType():
             additional = additional + 0.3
         additional = additional + centerSkill.getAdditionalActivationRate()
-        return Skill.activationRateJpList[activationRate_jp] * (1 + 0.0555* (self.idol.getSkillLevel() -1 )) * additional
+        self.activationRate = Skill.activationRateJpList[self.activationRate_jp] * (1 + 0.0555* (self.idol.getSkillLevel() -1 )) * additional
 
     def _calcEffectTime(self, effectTime_jp):
-        lv1 = Skill.effectTimeJpList[effectTime_jp]
+        try:
+            lv1 = Skill.effectTimeJpList[effectTime_jp]
+        except:
+            print effectTime_jp
+            raise Exception("calcEffectTime")
         return lv1 + math.floor(lv1 * 5.55) / float(100) * float(self.idol.getSkillLevel() -1 )
 
     def calcIsActivate(self):
+        self.isActivateList = []
         length = self.music.getLength()
         for i in range(0, int(math.ceil((length - self.frequency) / self.frequency))+1):
             self.isActivateList.append(self._isActivate())

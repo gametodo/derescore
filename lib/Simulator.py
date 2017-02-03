@@ -8,16 +8,15 @@ import Music
 class Simulator:
     unit = None
     music = None
+    baseScore = None
     def __init__ (self, config, totalApeal, musicName, difficalty, idolNames, calcType):
         self.calcType = calcType
-        if not Simulator.music:
-            Simulator.music = Music.Music(config, musicName, difficalty)
-            self.baseScore = Simulator.music.getBaseScore(totalApeal)
-        if not Simulator.unit:
-            Simulator.unit = Unit.Unit([Idol.Idol(config,name, self.music) for name in idolNames])
+        Simulator.music = Music.Music(config, musicName, difficalty)
+        Simulator.baseScore = Simulator.music.getBaseScore(totalApeal)
+        Simulator.unit = Unit.Unit([Idol.Idol(config,name, self.music) for name in idolNames])
 
     def getBaseScore(self):
-        return self.baseScore
+        return Simulator.baseScore
         
     def init(self):
         self.skillHistory = []
@@ -63,7 +62,7 @@ class Simulator:
         comboOdds = Simulator.music.getComboRate(currentNotes)
         skillScore = self._calcSkillRate()
         skillCombo = self._calcComboRate()
-        currentPoint = math.floor(self.baseScore * comboOdds * skillScore * skillCombo)
+        currentPoint = round(Simulator.baseScore * comboOdds * skillScore * skillCombo)
         noteTime = Simulator.music.getNoteTime(currentNotes)
         idols =Simulator.unit.getIdols()
         self.skillHistory2.append("%d, %f, %d, %f, %s"%(currentNotes+1, noteTime, int(currentPoint), comboOdds, ",".join([str(self._currentSkill(idol)) for idol in Simulator.unit.getIdols()])))
