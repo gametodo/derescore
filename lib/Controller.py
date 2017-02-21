@@ -16,6 +16,7 @@ def simulate(config, inputDict, loopTimes):
         score, score300, unit, skillHistory, skillHistory2 = simulator.calcScore()
         scores.append(score)
         sumScores = sumScores + score
+        # myfile raise exception
         myfile.putFile("output/skill%04d.txt" %(i), "\n".join(skillHistory))
         myfile.putFile("output/vskill%04d.txt" %(i), "\n".join(skillHistory2))
 

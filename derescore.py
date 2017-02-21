@@ -1,24 +1,33 @@
-# condinf: utf-8
+#! /bin/env python
+# -*- coding: utf-8 -*-
 import sys
 import os
+import codecs
 
-sys.path.append(os.path.dirname(os.path.abspath(__file__)) + "/utility/")
-sys.path.append(os.path.dirname(os.path.abspath(__file__)) + "/lib/")
+curDir = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(curDir + "/utility/")
+sys.path.append(curDir + "/lib/")
 
 import Controller
 import myjson
+from UnicodeException import UnicodeException
 
-curDir = os.getcwd()
 config = {}
 config["baseDir"] = curDir + "/"
-config["configFile"] = curDir + "/conf/kscore-config.json"
-
+config["configFile"] = curDir + "/config/config.json"
+sys.stdout = codecs.getwriter('utf_8')(sys.stdout)
 inputJson = myjson.json2dict(curDir+"/input.json")
 
 def main(loopTimes):
-    scores, sumScores = Controller.simulate(config, inputJson, loopTimes)
-    for score in scores:
-        print score
+    try:
+        scores, sumScores = Controller.simulate(config, inputJson, loopTimes)
+        for score in scores:
+            print score
+    except UnicodeException as e:
+        print e.message
+    except Exception as e:
+        print "error Exception"
+        print e
 
 if len(sys.argv) == 2:
     main(int(sys.argv[1]))

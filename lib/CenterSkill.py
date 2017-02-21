@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import re
+from UnicodeException import UnicodeException
 
 class CenterSkill:
     regex = ur"""
@@ -21,14 +22,14 @@ class CenterSkill:
         u"ビジュアル": "Vi"
     }
 
-    def __init__(self, str):
+    def __init__(self, ustr):
         pat = re.compile(CenterSkill.regex, re.X)
-        group = pat.search(str)
+        group = pat.search(ustr)
         if not group:
-            raise Exception("CenterSkill::init fail :" + str)
+            raise UnicodeException(u"CenterSkill::init fail :" + ustr)
         self.type = CenterSkill.regResultType[group.group(1)]
         self.attribute = CenterSkill.regResultAttribute[group.group(2)]
-        self.effect = float(group.group(3)) / 100.0
+        self.value = float(group.group(3)) / 100.0
 
     def getType(self):
         return self.type
@@ -36,8 +37,8 @@ class CenterSkill:
     def getAttribute(self):
         return self.attribute
 
-    def getEffect(self):
-        return self.effect
+    def getValue(self):
+        return self.value
     
     def getAdditionalActivationRate(self):
         return 0.0

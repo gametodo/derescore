@@ -8,9 +8,11 @@ class Idol:
     def __init__(self, config, name, music):
         self.skillLevel = 10
         self.name = name
-        if(not(os.path.exists(config["baseDir"]+ "idols/"+name+".json"))):
-            raise Exception(name)
-        idolData = myjson.json2dict(config["baseDir"]+ "idols/"+name+".json")
+
+        path = config["baseDir"]+ "idols/"+name+".json"
+        if (not os.path.exists(path)):
+            path = config["baseDir"]+"/idols.data/"+name+".json"
+        idolData = myjson.json2dict(path) #raise exception
         self.nameJp = idolData["name"]
         self.type = idolData["type"]
         self.centerSkill = CenterSkill.CenterSkill(idolData["centerSkill"])

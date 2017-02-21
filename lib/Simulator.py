@@ -44,7 +44,7 @@ class Simulator:
         isInvocation = idol.getSkill().isActivateTime(noteTime, 0.0)
         if isInvocation:
             self._log(idol, isInvocation)
-            return idol.getSkill().getEffect()
+            return idol.getSkill().getValue()
         return 1.0
 
     def _calcSkillRate(self):

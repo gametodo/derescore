@@ -1,6 +1,7 @@
 import myjson
 import myfile
 import math
+import os.path
 
 class Music:
     baseScoreRateList = {
@@ -12,7 +13,10 @@ class Music:
     }
     
     def __init__(self, config, name, difficalty):
-        musicJson = myjson.json2dict(config["baseDir"]+"/musics/"+name+".json")
+        path = config["baseDir"]+"/musics/"+name+".json"
+        if (not os.path.exists(path)):
+            path = config["baseDir"]+"/musics.data/"+name+".json"
+        musicJson = myjson.json2dict(path) # raise Exception
         self.name = name
         self.difficalty = difficalty
         self.title = musicJson["title"]
@@ -22,7 +26,10 @@ class Music:
         self.type = musicJson["type"]
         self.comboRate = []
         self.calcComboRate()
-        matrix = myfile.readCsv(config["baseDir"]+"/musics/"+name+"-"+difficalty + "-notes.csv")
+        notesPath = config["baseDir"]+"/musics/"+name+"-"+difficalty + "-notes.csv"
+        if (not os.path.exists(notesPath)):
+            notesPath = config["baseDir"]+"/musics.data/"+name+"-"+difficalty + "-notes.csv"
+        matrix = myfile.readCsv(notesPath) # raise Exception
         matrix[0].pop(0)
         self.notes = [float(str) for str in matrix[0]]
 
