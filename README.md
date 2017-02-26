@@ -3,7 +3,7 @@
 入力（input.json: スキル、アピール値）に対する、スコアを計算します。
 
 ```
-todo@main:~/derescore$ python derescore.py 5
+todo@main:~/derescore$ python derescore.py input.json 5
 1276815.0
 1281761.0
 1274475.0
@@ -62,7 +62,7 @@ scoreType "full"はスキルが100%発動します。
 * 適宜ソース編集して、好きなデータを取得する。
     * 300番目のノーツタップ時のスコア等
 
-* python derescore.py [試行回数]
+* python derescore.py input.json [試行回数]
 
 試行回数は デフォルト 1 です。
 
@@ -70,12 +70,11 @@ scoreType "full"はスキルが100%発動します。
 
 ## ソースについて
 
-python 未経験なので大目に見てください。(virtualboxを立ち上げるのが面倒でpythonになりました。)
-
-また、書き捨てプログラムのつもりで作成したので、作りこんでいません。
+書き捨てプログラムのつもりで作成したので、作りこんでいません。
 
 ## TODO
 
+* python3化
 * sqlite3化する。(楽曲データ、アイドルデータ、ローカルデータ)
 * アイドル情報とポテンシャル情報、サポートメンバーから総アピール値の計算
 * perfectの範囲内から、理想スキルを探す機能(最高スコア時のみ)

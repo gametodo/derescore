@@ -16,9 +16,8 @@ config = {}
 config["baseDir"] = curDir + "/"
 config["configFile"] = curDir + "/config/config.json"
 sys.stdout = codecs.getwriter('utf_8')(sys.stdout)
-inputJson = myjson.json2dict(curDir+"/input.json")
 
-def main(loopTimes):
+def main(loopTimes, inputJson):
     try:
         scores, sumScores = Controller.simulate(config, inputJson, loopTimes)
         for score in scores:
@@ -29,8 +28,17 @@ def main(loopTimes):
         print "error Exception"
         print e
 
-if len(sys.argv) == 2:
-    main(int(sys.argv[1]))
+if len(sys.argv) > 1:
+    inputFileName = sys.argv[1]
+    if len(sys.argv) > 2:
+        loopTimes = int(sys.argv[2])
+    else:
+        loopTimes = 1
+    inputPath = curDir+"/"+inputFileName
+    if not os.path.exists(inputPath):
+        raise Exception("file not fond path:" + inputPath)
+    inputJson = myjson.json2dict(inputPath)
+    main(loopTimes, inputJson)
+    
 else:
-    loopTimes = 1
-    main(1)
+    main(1, curDir+"/input.json")
