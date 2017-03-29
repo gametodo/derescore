@@ -108,7 +108,20 @@ class Skill:
         (高確率|中確率|低確率)でライフを(\d+)消費し、
         (一瞬の間|わずかな間|少しの間|しばらくの?間|かなりの間)
         PERFECTのスコア(\d+)[%％]アップ[、。]
-        ([A-Z/]+)でもCOMBO継続$""")
+        ([A-Z/]+)でもCOMBO継続$"""),
+
+        "skillboost": (
+            {"scrappingLife": None,
+             "frequency" : 1,
+             "activationRate_jp" : 2,
+             "effectTime_jp" : 3,
+             "hitType": None,
+             "value": None,
+             "life": None,
+            }, ur"""
+        ^(\d+)秒(?:毎|ごと|間)、
+        (高確率|中確率|低確率)で(一瞬の間|わずかな間|少しの間|しばらくの?間|かなりの間)、
+        他アイドルの特技効果を(大)アップ$""")
     }
     activationRateJpList = {u"高確率": 0.40, u"中確率": 0.35, u"低確率": 0.30}
     effectTimeJpList = {u"かなりの間": 6.00, u"しばらくの間": 5.00, u"しばらく間": 5.00, u"少しの間": 4.00, u"わずかな間": 3.00, u"一瞬の間": 2.00}
@@ -134,6 +147,9 @@ class Skill:
     def isCombo(self):
         return self.type == "combo"
 
+    def isSkillBoost(self):
+        return self.type == "skillboost"
+
     def isScore(self):
         return self.type == "score" or self.type == "overload"
 
@@ -157,6 +173,8 @@ class Skill:
             if group:
                 skillList = self._groupToList(group, fetchers)
                 skillList["type"] = key
+                if key == "skillboost":
+                    skillList["value"] = "0.00001"
                 return skillList
         raise UnicodeException(u"Skill::parse fail : " + str(skillstr))
         

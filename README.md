@@ -19,6 +19,7 @@ todo@main:~/derescore$ python derescore.py input.json 5
 * 楽曲データ
 
 特技 オーバーロード のライフ計算を行っておりません。
+スキルブーストは 17% と 18%には対応しています。
 
 ## Requirement
 
