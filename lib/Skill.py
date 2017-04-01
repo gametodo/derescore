@@ -17,6 +17,7 @@ class Skill:
              "effectTime_jp" : 3,
              "hitType": 4,
              "value": 5,
+             "combo-value": None,
              "life": None,
             },
             ur"""
@@ -32,6 +33,7 @@ class Skill:
              "effectTime_jp" : 3,
              "hitType": 4,
              "value": 5,
+             "combo-value": None,
              "life": None,
             }, ur"""
         ^(\d+)秒(?:毎|ごと|間)、
@@ -45,7 +47,8 @@ class Skill:
              "activationRate_jp" : 2,
              "effectTime_jp" : 3,
              "hitType": None,
-             "value": 4,
+             "value": None,
+             "combo-value": 4,
              "life": None,
             }, ur"""
         ^(\d+)秒(?:毎|ごと|間)、
@@ -60,6 +63,7 @@ class Skill:
              "effectTime_jp" : 3,
              "hitType": 4,
              "value": None,
+             "combo-value": None,
              "life": None,
             }, ur"""
         ^(\d+)秒(?:毎|ごと|間)、
@@ -74,6 +78,7 @@ class Skill:
              "effectTime_jp" : 3,
              "hitType": None,
              "value": None,
+             "combo-value": None,
              "life": 4,
             }, ur"""
         ^(\d+)秒(?:毎|ごと|間)、
@@ -88,6 +93,7 @@ class Skill:
              "effectTime_jp" : 3,
              "hitType": None,
              "value": None,
+             "combo-value": None,
              "life": None,
             }, ur"""
         ^(\d+)秒(?:毎|ごと|間)、
@@ -102,6 +108,7 @@ class Skill:
              "effectTime_jp" : 4,
              "hitType": 6,
              "value": 5,
+             "combo-value": None,
              "life": None,
             }, ur"""
         ^(\d+)秒(?:毎|ごと|間)、
@@ -117,11 +124,26 @@ class Skill:
              "effectTime_jp" : 3,
              "hitType": None,
              "value": None,
+             "combo-value": None,
              "life": None,
             }, ur"""
         ^(\d+)秒(?:毎|ごと|間)、
         (高確率|中確率|低確率)で(一瞬の間|わずかな間|少しの間|しばらくの?間|かなりの間)、
-        他アイドルの特技効果を(大)アップ$""")
+        他アイドルの特技効果を(大)アップ$"""),
+        "focus": (
+            {"scrappingLife": None,
+             "frequency" : 1,
+             "activationRate_jp" : 2,
+             "effectTime_jp" : 3,
+             "hitType": None,
+             "value": 4,
+             "combo-value": 5,
+             "life": None,
+            }, ur"""
+            ^(?:キュート|クール|パッション)アイドルのみ編成時、(\d+)秒毎、
+            (高確率|中確率|低確率)で(一瞬の間|わずかな間|少しの間|しばらくの?間|かなりの間)、
+            PERFECTのスコア(\d+)%アップ、COMBOボーナス(\d+)%アップ
+            """)
     }
     activationRateJpList = {u"高確率": 0.40, u"中確率": 0.35, u"低確率": 0.30}
     effectTimeJpList = {u"かなりの間": 6.00, u"しばらくの間": 5.00, u"しばらく間": 5.00, u"少しの間": 4.00, u"わずかな間": 3.00, u"一瞬の間": 2.00}
@@ -137,6 +159,14 @@ class Skill:
             self.value = 1.0+ float(skillList["value"])/100
         else:
             self.value = 1.0
+        if skillList["combo-value"]:
+            self.comboValue = 1.0+ float(skillList["combo-value"])/100
+        else:
+            self.comboValue = 1.0
+        if skillList["boost-value"]:
+            self.boostValue = float(skillList["boost-value"])/100
+        else:
+            self.boostValue = 0
         self.activationRate_jp = skillList["activationRate_jp"]
         self.isActivateList = []
         self.activationRate = 0.0
@@ -145,16 +175,22 @@ class Skill:
         return "Skill(type=" + str(self.type) + ", frequency=" + str(self.frequency) + ", effectTime=" + str(self.effectTime) + ", value="+str(self.value)+")"
 
     def isCombo(self):
-        return self.type == "combo"
+        return self.type == "combo" or self.type == "focus"
 
     def isSkillBoost(self):
         return self.type == "skillboost"
 
     def isScore(self):
-        return self.type == "score" or self.type == "overload"
+        return self.type == "score" or self.type == "overload" or self.type == "focus"
 
     def getValue(self):
         return self.value
+
+    def getComboValue(self):
+        return self.comboValue
+        
+    def getBoostValue(self):
+        return self.bosstValue
         
     def _groupToList(self, group, fetchers):
         ret = {}
@@ -174,7 +210,9 @@ class Skill:
                 skillList = self._groupToList(group, fetchers)
                 skillList["type"] = key
                 if key == "skillboost":
-                    skillList["value"] = "0.00001"
+                    skillList["boost-value"] = "0.04"
+                else:
+                    skillList["boost-value"] = None
                 return skillList
         raise UnicodeException(u"Skill::parse fail : " + str(skillstr))
         

@@ -46,6 +46,14 @@ class Simulator:
             self._log(idol, isInvocation)
             return idol.getSkill().getValue() + boost
         return 1.0
+        
+    def _currentComboSkill(self, idol, boost):
+        noteTime = Simulator.music.getNoteTime(self.currentNotes)
+        isInvocation = idol.getSkill().isActivateTime(noteTime, 0.0)
+        if isInvocation:
+            self._log(idol, isInvocation)
+            return idol.getSkill().getComboValue() + boost
+        return 1.0
 
     def _currentSkillForSkillBoost(self, idol):
         noteTime = Simulator.music.getNoteTime(self.currentNotes)
@@ -66,7 +74,7 @@ class Simulator:
     def _calcComboRate(self, boost):
         if (self.currentNotes == 0):
             return 1.0
-        return max([self._currentSkill(idol, boost) for idol in Simulator.unit.getIdols() if idol.getSkill().isCombo()])
+        return max([self._currentComboSkill(idol, boost) for idol in Simulator.unit.getIdols() if idol.getSkill().isCombo()])
 
     def _score(self, currentScore, currentNotes):
         self.currentNotes = currentNotes
@@ -79,5 +87,5 @@ class Simulator:
         currentPoint = round(Simulator.baseScore * comboOdds * skillScore * skillCombo)
         noteTime = Simulator.music.getNoteTime(currentNotes)
         idols = Simulator.unit.getIdols()
-        self.skillHistory2.append("%d, %f, %d, %f, %s"%(currentNotes+1, noteTime, int(currentPoint), comboOdds, ",".join([str(self._currentSkill(idol, skillBoostRate)) for idol in Simulator.unit.getIdols()])))
+        self.skillHistory2.append("%d, %f, %d, %f, %s"%(currentNotes+1, noteTime, int(currentPoint), comboOdds, ",".join([str(self._currentSkill(idol, skillBoostRate))+"/"+str(self._currentComboSkill(idol, skillBoostRate)) for idol in Simulator.unit.getIdols()])))
         return currentScore + currentPoint
